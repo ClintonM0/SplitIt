@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>BG.png</file>
+        <file>Quit.png</file>
+        <file>ListButton.png</file>
+        <file>VolumeKnob.png</file>
+        <file>VolumeSlider.png</file>
+        <file>Tint.png</file>
+        <file>InfoBox.png</file>
+        <file>GenericButton.png</file>
+    </qresource>
+</RCC>
