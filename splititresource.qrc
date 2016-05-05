@@ -8,5 +8,9 @@
         <file>Tint.png</file>
         <file>InfoBox.png</file>
         <file>GenericButton.png</file>
+        <file>GenericButtonClicked.png</file>
+        <file>GenericButtonHover.png</file>
+        <file>VolumeKnobClicked.png</file>
+        <file>VolumeKnobHover.png</file>
     </qresource>
 </RCC>

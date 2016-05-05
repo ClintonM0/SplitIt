@@ -15,11 +15,14 @@ public:
 signals:
     void pressed();
     void released();
+    void hovered();
+    void unhovered();
 
 protected:
     void mousePressEvent(QMouseEvent* event); //QWidget* widget
     void mouseMoveEvent(QMouseEvent* event);
     void mouseReleaseEvent(QMouseEvent *event);
+    void leaveEvent(QEvent*);
 
 private:
     int offset;

@@ -29,6 +29,9 @@
     <property name="cursor">
      <cursorShape>PointingHandCursor</cursorShape>
     </property>
+    <property name="mouseTracking">
+     <bool>true</bool>
+    </property>
     <property name="text">
      <string/>
     </property>
@@ -50,6 +53,9 @@
     </property>
     <property name="cursor">
      <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="mouseTracking">
+     <bool>true</bool>
     </property>
     <property name="frameShape">
      <enum>QFrame::NoFrame</enum>
@@ -117,6 +123,9 @@
     <property name="cursor">
      <cursorShape>OpenHandCursor</cursorShape>
     </property>
+    <property name="mouseTracking">
+     <bool>true</bool>
+    </property>
     <property name="text">
      <string/>
     </property>
@@ -154,6 +163,9 @@
     </property>
     <property name="cursor">
      <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="mouseTracking">
+     <bool>true</bool>
     </property>
     <property name="text">
      <string/>
@@ -710,6 +722,9 @@
     <property name="cursor">
      <cursorShape>PointingHandCursor</cursorShape>
     </property>
+    <property name="mouseTracking">
+     <bool>true</bool>
+    </property>
     <property name="text">
      <string>Open</string>
     </property>
@@ -780,6 +795,9 @@
     <property name="cursor">
      <cursorShape>PointingHandCursor</cursorShape>
     </property>
+    <property name="mouseTracking">
+     <bool>true</bool>
+    </property>
     <property name="text">
      <string>Create</string>
     </property>
@@ -813,7 +831,10 @@
    <extends>QLabel</extends>
    <header location="global">clickablelabel.h</header>
    <slots>
-    <signal>clicked()</signal>
+    <signal>pressed()</signal>
+    <signal>hovered()</signal>
+    <signal>unhovered()</signal>
+    <signal>released()</signal>
     <slot>visible()</slot>
    </slots>
   </customwidget>
@@ -822,8 +843,10 @@
    <extends>QLabel</extends>
    <header location="global">draglabel.h</header>
    <slots>
-    <signal>mousePressEvent()</signal>
-    <signal>mouseMoveEvent()</signal>
+    <signal>pressed()</signal>
+    <signal>released()</signal>
+    <signal>hovered()</signal>
+    <signal>unhovered()</signal>
    </slots>
   </customwidget>
  </customwidgets>

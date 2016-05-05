@@ -1,4 +1,4 @@
-#include "draglabel.h"
+#include <draglabel.h>
 #include <QCursor>
 #include <QWidget>
 #include <QPoint>

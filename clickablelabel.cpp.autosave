@@ -1,4 +1,4 @@
-#include "clickablelabel.h"
+#include <clickablelabel.h>
 #include <QCursor>
 #include <iostream>
 
