@@ -1,21 +1,22 @@
-#include "draglabel.h"
+#include <VolumeLabel.h>
 #include <QCursor>
 #include <QWidget>
 #include <QPoint>
 #include <iostream>
+#include <splitit.h>
 
 using namespace std;
 
-DragLabel::DragLabel(QWidget* parent) : QLabel(parent)
+VolumeLabel::VolumeLabel(QWidget* parent) : QLabel(parent)
 {
 }
 
-DragLabel::~DragLabel()
+VolumeLabel::~VolumeLabel()
 {
 
 }
 
-void DragLabel::mousePressEvent(QMouseEvent *event) //QWidget *widget
+void VolumeLabel::mousePressEvent(QMouseEvent *event) //QWidget *widget
 {
     initPos = this->pos();
     offset = event->pos().y();
@@ -23,13 +24,12 @@ void DragLabel::mousePressEvent(QMouseEvent *event) //QWidget *widget
     emit pressed();
 }
 
-void DragLabel::mouseMoveEvent(QMouseEvent *event)
+void VolumeLabel::mouseMoveEvent(QMouseEvent *event)
 {
     emit hovered();
 
-
-    posX = DragLabel::pos().x();
-    posY = DragLabel::pos().y();
+    posX = VolumeLabel::pos().x();
+    posY = VolumeLabel::pos().y();
     cursorY = mapFromGlobal(QCursor::pos()).y();
 
     if(event->buttons() & Qt::LeftButton)
@@ -49,14 +49,14 @@ void DragLabel::mouseMoveEvent(QMouseEvent *event)
     }
 }
 
-void DragLabel::mouseReleaseEvent(QMouseEvent *event)
+void VolumeLabel::mouseReleaseEvent(QMouseEvent *event)
 {
     setCursor(Qt::OpenHandCursor);
 
     emit released();
 }
 
-void DragLabel::leaveEvent(QEvent*)
+void VolumeLabel::leaveEvent(QEvent*)
 {
     emit unhovered();
 }

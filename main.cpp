@@ -1,4 +1,4 @@
-#include "splitit.h"
+#include <splitit.h>
 #include <QApplication>
 
 int main(int argc, char *argv[])

@@ -15,13 +15,11 @@ TEMPLATE = app
 SOURCES += main.cpp\
         splitit.cpp \
     clickablelabel.cpp \
-    draglabel.cpp \
-    soundsystem.cpp
+    volumelabel.cpp
 
 HEADERS  += splitit.h \
     clickablelabel.h \
-    draglabel.h \
-    soundsystem.h
+    volumelabel.h
 
 FORMS    += splitit.ui
 

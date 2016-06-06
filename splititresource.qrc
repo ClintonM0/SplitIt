@@ -12,5 +12,27 @@
         <file>GenericButtonHover.png</file>
         <file>VolumeKnobClicked.png</file>
         <file>VolumeKnobHover.png</file>
+        <file>PlayPauseButton.png</file>
+        <file>PlayPauseButtonOff.png</file>
+        <file>PlayPauseButtonOn.png</file>
+        <file>PlayPauseButtonOffHovered.png</file>
+        <file>PlayPauseButtonOnHovered.png</file>
+        <file>PlayPauseButtonPressed.png</file>
+        <file>StopButton.png</file>
+        <file>StopButtonHovered.png</file>
+        <file>StopButtonPressed.png</file>
+        <file>PlayPauseButtonHovered.png</file>
+        <file>TimeSkipFwdButton.png</file>
+        <file>TimeSkipFwdButtonHovered.png</file>
+        <file>TimeSkipFwdButtonPressed.png</file>
+        <file>TimeSkipBakButton.png</file>
+        <file>TimeSkipBakButtonHovered.png</file>
+        <file>TimeSkipBakButtonPressed.png</file>
+        <file>TrackBakButton.png</file>
+        <file>TrackBakButtonHovered.png</file>
+        <file>TrackBakButtonPressed.png</file>
+        <file>TrackFwdButton.png</file>
+        <file>TrackFwdButtonHovered.png</file>
+        <file>TrackFwdButtonPressed.png</file>
     </qresource>
 </RCC>

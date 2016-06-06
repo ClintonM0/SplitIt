@@ -1,16 +1,16 @@
-#ifndef DRAGLABEL_H
-#define DRAGLABEL_H
+#ifndef VolumeLabel_H
+#define VolumeLabel_H
 #include <QLabel>
 #include <QMouseEvent>
 #include <QEvent>
 #include <QPoint>
 
-class DragLabel : public QLabel
+class VolumeLabel : public QLabel
 {
     Q_OBJECT
 public:
-    explicit DragLabel(QWidget* parent=0);
-    ~DragLabel();
+    explicit VolumeLabel(QWidget* parent=0);
+    ~VolumeLabel();
 
 signals:
     void pressed();
@@ -32,4 +32,4 @@ private:
     QPoint initPos;
 };
 
-#endif // DRAGLABEL_H
+#endif // VolumeLabel_H
