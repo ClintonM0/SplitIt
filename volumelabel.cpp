@@ -18,6 +18,7 @@ VolumeLabel::~VolumeLabel()
 
 void VolumeLabel::mousePressEvent(QMouseEvent *event) //QWidget *widget
 {
+    this->setFocus();
     initPos = this->pos();
     offset = event->pos().y();
     setCursor(Qt::ClosedHandCursor);

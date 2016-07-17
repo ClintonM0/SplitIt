@@ -2,6 +2,8 @@
 #define SPLITIT_H
 
 #include <QMainWindow>
+#include <QGraphicsOpacityEffect>
+#include <QPixmap>
 #include <QPoint>
 
 namespace Ui {
@@ -16,15 +18,16 @@ public:
     explicit SplitIt(QWidget *parent = 0);
     ~SplitIt();
 
-private slots:
+    void closeEvent(QCloseEvent *event);
 
-    void on_Quit_pressed();
+private slots:
 
     void fadeButton();
 
     void on_ListButton_pressed();
     void fadeOutFinished();
     void on_TintOverlay_pressed();
+    void getCurrentTrack();
 
     void on_OpenButtonText_pressed();
     void on_OpenButtonText_hovered();
@@ -61,11 +64,55 @@ private slots:
     void on_Back_hovered();
     void on_Back_unhovered();
 
+    void on_Next_pressed();
+    void on_Next_released();
+    void on_Next_hovered();
+    void on_Next_unhovered();
+
+    void on_Prev_pressed();
+    void on_Prev_released();
+    void on_Prev_hovered();
+    void on_Prev_unhovered();
+
+    void on_CreationTrackName_enable();
+    void on_CreationTrackName_disable();
+    void on_CreationTrackTime_enable();
+    void on_CreationTrackTime_disable();
+
+    void on_CreationCurrentTime_pressed();
+    void on_CreationCurrentTime_released();
+    void on_CreationCurrentTime_hovered();
+    void on_CreationCurrentTime_unhovered();
+
+    void on_CreationLoad_hovered();
+
+    void on_CreationLoad_pressed();
+
+    void on_CreationLoad_released();
+
+    void on_CreationLoad_unhovered();
+
+    void on_CreationSave_pressed();
+
+    void on_CreationSave_released();
+
+    void on_CreationSave_hovered();
+
+    void on_CreationSave_unhovered();
+
 private:
     Ui::SplitIt *ui;
+
     int playState;
-    unsigned int *position;
-    unsigned int *length;
+    int currentTrack;
+    unsigned int length = 0;
+    unsigned int position = 0;
+
+    QStringList config;
+    QList<int> trackArray;
+    QStringList nameArray;
+
+    float visualiserAlpha;
 };
 
 #endif // SPLITIT_H

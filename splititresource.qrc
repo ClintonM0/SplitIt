@@ -34,5 +34,17 @@
         <file>TrackFwdButton.png</file>
         <file>TrackFwdButtonHovered.png</file>
         <file>TrackFwdButtonPressed.png</file>
+        <file>CreationUI/BG.png</file>
+        <file>CreationUI/Load.png</file>
+        <file>CreationUI/Save.png</file>
+        <file>CreationUI/SetCurrentTime.png</file>
+        <file>CreationUI/LoadHovered.png</file>
+        <file>CreationUI/LoadPressed.png</file>
+        <file>CreationUI/SaveHovered.png</file>
+        <file>CreationUI/SavePressed.png</file>
+        <file>CreationUI/SetCurrentTimeHovered.png</file>
+        <file>CreationUI/SetCurrentTimePressed.png</file>
+        <file>Logo.png</file>
+        <file>LogoGlow.png</file>
     </qresource>
 </RCC>

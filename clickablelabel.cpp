@@ -2,8 +2,6 @@
 #include <QCursor>
 #include <iostream>
 
-using namespace std;
-
 ClickableLabel::ClickableLabel(QWidget* parent) : QLabel(parent)
 {
     setMouseTracking(true);
@@ -16,6 +14,7 @@ ClickableLabel::~ClickableLabel()
 
 void ClickableLabel::mousePressEvent(QMouseEvent*)
 {
+    this->setFocus();
     emit pressed();
 
 }
