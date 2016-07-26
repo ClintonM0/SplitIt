@@ -218,14 +218,14 @@ void SplitIt::on_OpenButtonText_pressed()
     ui->TintOverlay->raise();
     ui->OpenButton->raise();
     ui->OpenButtonText->raise();
-    ui->OpenButton->setPixmap(QPixmap(":/images/GenericButtonClicked.png"));
+    ui->OpenButton->setPixmap(QPixmap(":/images/GenericButtonClicked"));
     fadeButton();
 }
 void SplitIt::on_OpenButtonText_released()
 {
     QString qFilePath = NULL;
     openButton = false;
-    ui->OpenButton->setPixmap(QPixmap(":/images/GenericButton.png"));
+    ui->OpenButton->setPixmap(QPixmap(":/images/GenericButton"));
     qFilePath = QFileDialog::getOpenFileName(this, tr("Select Audio File"),
                                                      "C://",
                                                      tr("Audio Files (*.mp3 *.wav)"));
@@ -257,84 +257,76 @@ void SplitIt::on_OpenButtonText_hovered()
 {
     if(openButton == false)
     {
-        ui->OpenButton->setPixmap(QPixmap(":/images/GenericButtonHover.png"));
+        ui->OpenButton->setPixmap(QPixmap(":/images/GenericButtonHover"));
     }
 }
 void SplitIt::on_OpenButtonText_unhovered()
 {
-    ui->OpenButton->setPixmap(QPixmap(":/images/GenericButton.png"));
+    ui->OpenButton->setPixmap(QPixmap(":/images/GenericButton"));
 }
 
 
 void SplitIt::on_CreateButtonText_pressed()
 {
-    ui->TintOverlay->raise();
-    ui->CreateButton->raise();
-    ui->CreateButtonText->raise();
-    ui->CreateButton->setPixmap(QPixmap(":/images/GenericButtonClicked.png"));
-    fadeButton();
+    ui->CreateButton->setPixmap(QPixmap(":/images/GenericButtonClicked"));
     createButton = true;
 }
 void SplitIt::on_CreateButtonText_released()
 {
-    QString qFilePath = NULL;
-    createButton = false;
-    ui->CreateButton->setPixmap(QPixmap(":/images/GenericButton.png"));
-    qFilePath = QFileDialog::getOpenFileName(this, tr("Select Audio File"),
-                                                     "C://",
-                                                     tr("SplitIt Config (*.txt)"));
-    if(qFilePath != NULL)
-    {
-        QFile configFile(qFilePath);
-        if(!configFile.open(QIODevice::ReadOnly | QIODevice::Text))
-            return;
-
-        QTextStream configStream(&configFile);
-        int lineNumber = 1;
-        while(!configStream.atEnd())
-        {
-            QString line = configStream.readLine();
-            config.append(line);
-            if(line.left(1) == QString("A") && lineNumber > 2)
-            {
-                trackArray.append(line.right(line.length() - 2).toInt());
-            }
-            if(line.left(1) == QString("B") && lineNumber > 2)
-            {
-                nameArray.append(line.right(line.length() - 2));
-            }
-            lineNumber = lineNumber + 1;
-        }
-        ui->STName->setText(config.at(1));
-        getCurrentTrack();
-        ui->SongName->setText(nameArray.at(currentTrack));
-    }
-
+    ui->TintOverlay->raise();
+    ui->CreateButton->raise();
+    ui->CreateButtonText->raise();
+    ui->CreateButton->setPixmap(QPixmap(":/images/GenericButton"));
+    
     fadeButton();
+    
+    if(ui->TintOverlay->isVisible())
+    {
+        ui->CreationBG->setVisible(1);
+        ui->CreationCurrentTime->setVisible(1);
+        ui->CreationLoad->setVisible(1);
+        ui->CreationNewTrack->setVisible(1);
+        ui->CreationSave->setVisible(1);
+        ui->CreationTrackListTitle->setVisible(1);
+        ui->CreationTrackName->setVisible(1);
+        ui->CreationTrackTime->setVisible(1);
+    }
+    else
+    {
+        ui->CreationBG->setVisible(0);
+        ui->CreationCurrentTime->setVisible(0);
+        ui->CreationLoad->setVisible(0);
+        ui->CreationNewTrack->setVisible(0);
+        ui->CreationSave->setVisible(0);
+        ui->CreationTrackListTitle->setVisible(0);
+        ui->CreationTrackName->setVisible(0);
+        ui->CreationTrackTime->setVisible(0);
+    }
+    
+    createButton = false;
 }
 void SplitIt::on_CreateButtonText_hovered()
 {
     if(createButton == false)
     {
-        ui->CreateButton->setPixmap(QPixmap(":/images/GenericButtonHover.png"));
+        ui->CreateButton->setPixmap(QPixmap(":/images/GenericButtonHover"));
     }
 }
-
 void SplitIt::on_CreateButtonText_unhovered()
 {
-    ui->CreateButton->setPixmap(QPixmap(":/images/GenericButton.png"));
+    ui->CreateButton->setPixmap(QPixmap(":/images/GenericButton"));
 }
 
 
 void SplitIt::on_VolumeKnob_pressed()
 {
     volumeButton = true;
-    ui->VolumeKnob->setPixmap(QPixmap(":/images/VolumeKnobClicked.png"));
+    ui->VolumeKnob->setPixmap(QPixmap(":/images/VolumeKnobClicked"));
 }
 void SplitIt::on_VolumeKnob_released()
 {
     volumeButton = false;
-    ui->VolumeKnob->setPixmap(QPixmap(":/images/VolumeKnob.png"));
+    ui->VolumeKnob->setPixmap(QPixmap(":/images/VolumeKnob"));
 
     if(ui->VolumeKnob->pos().y() <= 254 && ui->VolumeKnob->pos().y() >= 70)
     {
@@ -350,14 +342,14 @@ void SplitIt::on_VolumeKnob_hovered()
 {
     if(volumeButton == false)
     {
-        ui->VolumeKnob->setPixmap(QPixmap(":/images/VolumeKnobHover.png"));
+        ui->VolumeKnob->setPixmap(QPixmap(":/images/VolumeKnobHover"));
     }
 }
 void SplitIt::on_VolumeKnob_unhovered()
 {
     if(volumeButton == false)
     {
-        ui->VolumeKnob->setPixmap(QPixmap(":/images/VolumeKnob.png"));
+        ui->VolumeKnob->setPixmap(QPixmap(":/images/VolumeKnob"));
     }
 }
 
@@ -668,6 +660,36 @@ void SplitIt::on_CreationLoad_released()
 {
     ui->CreationLoad->setPixmap(QPixmap(":/images/CreationUI/Load"));
     creationLoadButton = false;
+    QString qFilePath = NULL;
+    qFilePath = QFileDialog::getOpenFileName(this, tr("Select Audio File"),
+                                                     "C://",
+                                                     tr("SplitIt Config (*.txt)"));
+    if(qFilePath != NULL)
+    {
+        QFile configFile(qFilePath);
+        if(!configFile.open(QIODevice::ReadOnly | QIODevice::Text))
+            return;
+
+        QTextStream configStream(&configFile);
+        int lineNumber = 1;
+        while(!configStream.atEnd())
+        {
+            QString line = configStream.readLine();
+            config.append(line);
+            if(line.left(1) == QString("A") && lineNumber > 2)
+            {
+                trackArray.append(line.right(line.length() - 2).toInt());
+            }
+            if(line.left(1) == QString("B") && lineNumber > 2)
+            {
+                nameArray.append(line.right(line.length() - 2));
+            }
+            lineNumber = lineNumber + 1;
+        }
+        ui->STName->setText(config.at(1));
+        getCurrentTrack();
+        ui->SongName->setText(nameArray.at(currentTrack));
+    }
 }
 void SplitIt::on_CreationLoad_hovered()
 {
