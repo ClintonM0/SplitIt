@@ -1,8 +1,11 @@
 #include <Windows.h>
 #include <lmcons.h>
+#include <math.h>
+#include <iostream>
 
 #include <fmod.hpp>
-#include <math.h>
+
+// Qt include files
 #include <QApplication>
 #include <QCoreApplication>
 #include <QCloseEvent>
@@ -16,10 +19,11 @@
 #include <QWidget>
 #include <QPainter>
 #include <QPropertyAnimation>
-#include <iostream>
+
 #include <splitit.h>
 #include <ui_splitit.h>
 
+// FMOD Sound System declaration
 FMOD::System *soundSystem;
 FMOD::Sound *sound;
 FMOD::Channel *channel = 0;
@@ -27,8 +31,10 @@ FMOD::ChannelGroup *master;
 FMOD::DSP *loudnessDSP;
 FMOD_RESULT result;
 
+// Music volume declaration
 float volume = 0;
 
+// Button press statuses for each button
 bool fadingOut = false;
 bool openButton = false;
 bool createButton = false;
@@ -43,16 +49,17 @@ bool creationCurrentTimeButton = false;
 bool creationLoadButton = false;
 bool creationSaveButton = false;
 
+// Qt Initialisation
 SplitIt::SplitIt(QWidget *parent) :
     QMainWindow(parent, Qt::Window),
     ui(new Ui::SplitIt)
 {
     ui->setupUi(this);
     this->setWindowFlags(this->windowFlags() | Qt::MSWindowsFixedSizeDialogHint);
+    
     ui->TintOverlay->setVisible(0);
 
-    ui->CreateButtonText->setDisabled(1);
-
+    // Font settings for UI text
     QFont font = QFont("Agency FB", 20, QFont::Bold);
     QFont fontUnderline = QFont("Agency FB", 20, QFont::Bold);
     QFont fontSmall = QFont("Agency FB", 16, QFont::Bold);
@@ -73,13 +80,16 @@ SplitIt::SplitIt(QWidget *parent) :
     ui->CreateButtonText->setFont(fontSmall);
     ui->OpenButtonText->setFont(fontSmall);
 
+    // Disable music controls upon launch. Enabled later when music file is loaded.
     ui->PlayPause->setDisabled(1);
     ui->Stop->setDisabled(1);
     ui->Forward->setDisabled(1);
     ui->Back->setDisabled(1);
     ui->Next->setDisabled(1);
     ui->Prev->setDisabled(1);
+    ui->VolumeKnob->setDisabled(1);
 
+    // Hide Creation UI upon launch.
     ui->CreationBG->setVisible(0);
     ui->CreationCurrentTime->setVisible(0);
     ui->CreationLoad->setVisible(0);
@@ -89,32 +99,35 @@ SplitIt::SplitIt(QWidget *parent) :
     ui->CreationTrackName->setVisible(0);
     ui->CreationTrackTime->setVisible(0);
 
+    // Fonts for Creation UI elements
     ui->CreationNewTrack->setFont(fontUnderline);
     ui->CreationTrackName->setFont(fontInput);
     ui->CreationTrackName->setStyleSheet("QLineEdit { background: rgb(27, 0, 49); }");
     ui->CreationTrackName->setFrame(0);
-
     ui->CreationTrackTime->setFont(fontInput);
     ui->CreationTrackTime->setStyleSheet("QLineEdit { background: rgb(27, 0, 49); }");
     ui->CreationTrackTime->setFrame(0);
-
     ui->CreationTrackListTitle->setFont(fontSmall);
 
     ui->Background->setFocus();
 
+    // Initialise FMOD Sound System
     result = FMOD::System_Create(&soundSystem);
 
     playState = 0; // 0 = stopped, 1 = paused, 2 = playing
     soundSystem->init(4, FMOD_INIT_NORMAL, 0);
     soundSystem->getMasterChannelGroup(&master);
+    // DSP = Digital Sound Processor
     master->getDSP(FMOD_CHANNELCONTROL_DSP_HEAD, &loudnessDSP);
     loudnessDSP->setMeteringEnabled(false, true);
 
+    // Initialise Music Visualiser with 100% transparency
     QGraphicsOpacityEffect *visualiser = new QGraphicsOpacityEffect(this);
     ui->VisualiserB->setGraphicsEffect(visualiser);
     visualiser->setOpacity(0);
 }
 
+// Release FMOD sound system upon application exit
 void SplitIt::closeEvent(QCloseEvent *event)
 {
     playState = 0;
@@ -122,7 +135,6 @@ void SplitIt::closeEvent(QCloseEvent *event)
     loudnessDSP->release();
     soundSystem->release();
 }
-
 SplitIt::~SplitIt()
 {
     delete ui;
@@ -135,8 +147,10 @@ void SplitIt::on_ListButton_pressed()
     fadeButton();
 }
 
+// Tint overlay fade function
 void SplitIt::fadeButton()
 {
+    // Qt fade effect
     QGraphicsOpacityEffect *eff = new QGraphicsOpacityEffect(this);
     ui->TintOverlay->setGraphicsEffect(eff);
     QPropertyAnimation* anim = new QPropertyAnimation(this);
@@ -144,6 +158,7 @@ void SplitIt::fadeButton()
     anim->setTargetObject(eff);
     anim->setPropertyName("opacity");
 
+    // Fade in or out
     if(ui->TintOverlay->isVisible() && fadingOut == false)
     {
         fadingOut = true;
@@ -185,12 +200,14 @@ void SplitIt::on_TintOverlay_pressed()
         anim->start(QAbstractAnimation::DeleteWhenStopped);
         connect(anim, SIGNAL(finished()), this, SLOT(fadeOutFinished()));
     }
+    // Handle for when tint overlay is clicked while fading out
     else
     {
         fadeOutFinished();
     }
 }
 
+// End tint overlay function
 void SplitIt::fadeOutFinished()
 {
     ui->TintOverlay->setVisible(0);
@@ -204,6 +221,7 @@ void SplitIt::getCurrentTrack()
     currentTrack = 0;
     int i = 0;
 
+    // Linear search for track according to current position
     while(trackArray.count() != (i + 1) && trackArray.at(i) * 1000 <= int(position))
     {
         currentTrack = i;
@@ -223,6 +241,7 @@ void SplitIt::on_OpenButtonText_pressed()
 }
 void SplitIt::on_OpenButtonText_released()
 {
+    // Open Windows Explorer with Qt to select file. 
     QString qFilePath = NULL;
     openButton = false;
     ui->OpenButton->setPixmap(QPixmap(":/images/GenericButton"));
@@ -243,12 +262,14 @@ void SplitIt::on_OpenButtonText_released()
         sound->getLength(&length, FMOD_TIMEUNIT_MS);
         QFileInfo audioFile(qFilePath);
         ui->SongName->setText(audioFile.fileName().left(audioFile.fileName().length() - 4));
+        // Enable music controls
         ui->PlayPause->setDisabled(0);
         ui->Stop->setDisabled(0);
         ui->Forward->setDisabled(0);
         ui->Back->setDisabled(0);
         ui->Next->setDisabled(0);
         ui->Prev->setDisabled(0);
+        ui->VolumeKnob->setDisabled(0);
         ui->PlayPause->setPixmap(QPixmap(":/images/PlayPauseButton"));
     }
     fadeButton();
@@ -362,6 +383,7 @@ void SplitIt::on_PlayPause_pressed()
 }
 void SplitIt::on_PlayPause_released()
 {
+    // Activate Visualiser
     QGraphicsOpacityEffect *visualiser = new QGraphicsOpacityEffect(this);
     ui->VisualiserB->setVisible(1);
     ui->VisualiserB->setGraphicsEffect(visualiser);
@@ -380,7 +402,7 @@ void SplitIt::on_PlayPause_released()
         channel->setPaused(false);
 
         ui->PlayPause->setPixmap(QPixmap(":/images/PlayPauseButtonOn"));
-
+        // Update visualiser for each tick while music is played
         while(playState == 2)
         {
             FMOD_DSP_METERING_INFO meter = {};
@@ -660,6 +682,7 @@ void SplitIt::on_CreationLoad_released()
 {
     ui->CreationLoad->setPixmap(QPixmap(":/images/CreationUI/Load"));
     creationLoadButton = false;
+    
     QString qFilePath = NULL;
     qFilePath = QFileDialog::getOpenFileName(this, tr("Select Audio File"),
                                                      "C://",
@@ -672,6 +695,7 @@ void SplitIt::on_CreationLoad_released()
 
         QTextStream configStream(&configFile);
         int lineNumber = 1;
+        // Read Config
         while(!configStream.atEnd())
         {
             QString line = configStream.readLine();
