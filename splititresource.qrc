@@ -46,5 +46,13 @@
         <file>CreationUI/SetCurrentTimePressed.png</file>
         <file>Logo.png</file>
         <file>LogoGlow.png</file>
+        <file>CreationUI/Add.png</file>
+        <file>CreationUI/AddHovered.png</file>
+        <file>CreationUI/AddPressed.png</file>
+        <file>CreationUI/Remove.png</file>
+        <file>CreationUI/RemoveHovered.png</file>
+        <file>CreationUI/RemovePressed.png</file>
+        <file>SeekSlider.png</file>
+        <file>ListBG.png</file>
     </qresource>
 </RCC>

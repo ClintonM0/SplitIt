@@ -2,7 +2,9 @@
 #define SPLITIT_H
 
 #include <QMainWindow>
+#include <QFileInfo>
 #include <QGraphicsOpacityEffect>
+#include <QListWidgetItem>
 #include <QPixmap>
 #include <QPoint>
 
@@ -74,6 +76,9 @@ private slots:
     void on_Prev_hovered();
     void on_Prev_unhovered();
 
+    void enableCreationUI();
+    void disableCreationUI();
+
     void on_CreationTrackName_enable();
     void on_CreationTrackName_disable();
     void on_CreationTrackTime_enable();
@@ -85,28 +90,45 @@ private slots:
     void on_CreationCurrentTime_unhovered();
 
     void on_CreationLoad_hovered();
-
     void on_CreationLoad_pressed();
-
     void on_CreationLoad_released();
-
     void on_CreationLoad_unhovered();
 
     void on_CreationSave_pressed();
-
     void on_CreationSave_released();
-
     void on_CreationSave_hovered();
-
     void on_CreationSave_unhovered();
+
+    void on_CreationAdd_pressed();
+    void on_CreationAdd_released();
+    void on_CreationAdd_hovered();
+    void on_CreationAdd_unhovered();
+
+    void on_CreationRemove_pressed();
+    void on_CreationRemove_released();
+    void on_CreationRemove_hovered();
+    void on_CreationRemove_unhovered();
+
+    void on_CreationTrackList_itemPressed(QListWidgetItem *selectedTrack);
+
+    void on_SeekKnob_pressed();
+    void on_SeekKnob_released();
+    void on_SeekKnob_hovered();
+    void on_SeekKnob_unhovered();
+
+    void on_List_itemPressed(QListWidgetItem *item);
 
 private:
     Ui::SplitIt *ui;
 
     int playState;
     int currentTrack;
-    unsigned int length = 0;
-    unsigned int position = 0;
+
+    QString audioFilePath;
+    QFileInfo audioFile;
+
+    unsigned int length;
+    unsigned int position;
 
     QStringList config;
     QList<int> trackArray;

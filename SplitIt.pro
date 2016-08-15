@@ -16,12 +16,14 @@ SOURCES += main.cpp\
         splitit.cpp \
     clickablelabel.cpp \
     volumelabel.cpp \
-    textinput.cpp
+    textinput.cpp \
+    seeklabel.cpp
 
 HEADERS  += splitit.h \
     clickablelabel.h \
     volumelabel.h \
-    textinput.h
+    textinput.h \
+    seeklabel.h
 
 FORMS    += splitit.ui
 
@@ -29,7 +31,7 @@ RESOURCES += \
     splititresource.qrc
 
 
-win32: LIBS += -L$$PWD/'../../../../Program Files (x86)/FMOD SoundSystem/FMOD Studio API Windows/api/lowlevel/lib/' -lfmod64_vc
+win32: LIBS += -L$$PWD/'../../../../Program Files (x86)/FMOD SoundSystem/FMOD Studio API Windows/api/lowlevel/lib/' -lfmod_vc
 
 INCLUDEPATH += $$PWD/'../../../../Program Files (x86)/FMOD SoundSystem/FMOD Studio API Windows/api/lowlevel/inc'
 DEPENDPATH += $$PWD/'../../../../Program Files (x86)/FMOD SoundSystem/FMOD Studio API Windows/api/lowlevel/inc'

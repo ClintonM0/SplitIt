@@ -29,7 +29,6 @@ void VolumeLabel::mouseMoveEvent(QMouseEvent *event)
 {
     emit hovered();
 
-    posX = VolumeLabel::pos().x();
     posY = VolumeLabel::pos().y();
     cursorY = mapFromGlobal(QCursor::pos()).y();
 

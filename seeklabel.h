@@ -1,16 +1,16 @@
-#ifndef VolumeLabel_H
-#define VolumeLabel_H
+#ifndef SeekLabel_H
+#define SeekLabel_H
 #include <QLabel>
 #include <QMouseEvent>
 #include <QEvent>
 #include <QPoint>
 
-class VolumeLabel : public QLabel
+class SeekLabel : public QLabel
 {
     Q_OBJECT
 public:
-    explicit VolumeLabel(QWidget* parent=0);
-    ~VolumeLabel();
+    explicit SeekLabel(QWidget* parent=0);
+    ~SeekLabel();
 
 signals:
     void pressed();
@@ -26,9 +26,9 @@ protected:
 
 private:
     int offset;
-    int posY;
-    int cursorY;
+    int posX;
+    int cursorX;
     QPoint initPos;
 };
 
-#endif // VolumeLabel_H
+#endif // SeekLabel_H
