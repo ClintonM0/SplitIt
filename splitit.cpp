@@ -1156,15 +1156,15 @@ void SplitIt::on_List_itemPressed(QListWidgetItem *item)
 {
     int trackIndex = ui->List->row(item);
     ui->SongName->setText(nameArray.at(trackIndex));
-    channel->setPosition(trackArray.at(trackIndex), FMOD_TIMEUNIT_MS);
+    channel->setPosition(trackArray.at(trackIndex) * 1000, FMOD_TIMEUNIT_MS);
 
     for(int i = 0; i < ui->List->count(); i = i + 1)
     {
         ui->List->item(i)->setTextColor(QColor(255, 255, 255, 255));
     }
     item->setTextColor(QColor(0, 191, 243, 255));
-
-    float timePortion = float(ui->SeekKnob->pos().x() - 173)/float(486);
-    int newPosition = timePortion * length;
-    channel->setPosition(newPosition, FMOD_TIMEUNIT_MS);
+    
+    channel->getPosition(&position, FMOD_TIMEUNIT_MS);
+    float knobPosition = float(position)/float(length);
+    ui->SeekKnob->move(knobPosition * 484 + 174, ui->SeekKnob->pos().y());
 }
