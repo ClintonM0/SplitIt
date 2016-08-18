@@ -129,6 +129,8 @@ SplitIt::SplitIt(QWidget *parent) :
     ui->CreationTrackTime->setStyleSheet("QLineEdit { background: rgb(27, 0, 49); }");
     ui->CreationTrackListTitle->setFont(fontSmall);
 
+    ui->CreationTrackList->setDragEnabled(0);
+
     // List UI font setup
     QFont fontNarrow = QFont("Agency FB", 20);
     fontNarrow.setLetterSpacing(QFont::AbsoluteSpacing,2);
@@ -136,6 +138,8 @@ SplitIt::SplitIt(QWidget *parent) :
 
     ui->ListTitle->setFont(font);
     ui->List->setFont(fontNarrow);
+
+    ui->List->setDragEnabled(0);
 
     ui->Background->setFocus();
 
@@ -302,22 +306,26 @@ void SplitIt::on_OpenButtonText_released()
     openButton = false;
     ui->OpenButton->setPixmap(QPixmap(":/images/GenericButton"));
     audioFilePath = QFileDialog::getOpenFileName(this, tr("Select Audio File"),
-                                                     "C://",
+                                                     QDir::homePath() + "/Music/",
                                                      tr("Audio Files (*.mp3 *.wav)"));
     if(audioFilePath != NULL)
     {
         const char * filePath = audioFilePath.toStdString().c_str();
+        // Stop music playback
         if(playState != 0)
         {
             playState = 0;
             channel->setPaused(1);
         }
+
+        // Set audio file as audio channel stream source
         sound->release();
         soundSystem->createSound(filePath, FMOD_CREATESTREAM, 0, &sound);
         soundSystem->playSound(sound, 0, true, &channel);
         sound->getLength(&length, FMOD_TIMEUNIT_MS);
         audioFile.setFile(audioFilePath);
         ui->SongName->setText(audioFile.fileName().left(audioFile.fileName().length() - 4));
+
         // Enable music controls
         ui->PlayPause->setDisabled(0);
         ui->Stop->setDisabled(0);
@@ -344,6 +352,35 @@ void SplitIt::on_OpenButtonText_unhovered()
 }
 
 
+void SplitIt::enableCreationUI()
+{
+    ui->CreationBG->setVisible(1);
+    ui->CreationAdd->setVisible(1);
+    ui->CreationCurrentTime->setVisible(1);
+    ui->CreationLoad->setVisible(1);
+    ui->CreationNewTrack->setVisible(1);
+    ui->CreationRemove->setVisible(1);
+    ui->CreationSave->setVisible(1);
+    ui->CreationTrackList->setVisible(1);
+    ui->CreationTrackListTitle->setVisible(1);
+    ui->CreationTrackName->setVisible(1);
+    ui->CreationTrackTime->setVisible(1);
+}
+void SplitIt::disableCreationUI()
+{
+    ui->Background->setFocus();
+    ui->CreationBG->setVisible(0);
+    ui->CreationAdd->setVisible(0);
+    ui->CreationCurrentTime->setVisible(0);
+    ui->CreationLoad->setVisible(0);
+    ui->CreationNewTrack->setVisible(0);
+    ui->CreationRemove->setVisible(0);
+    ui->CreationSave->setVisible(0);
+    ui->CreationTrackList->setVisible(0);
+    ui->CreationTrackListTitle->setVisible(0);
+    ui->CreationTrackName->setVisible(0);
+    ui->CreationTrackTime->setVisible(0);
+}
 void SplitIt::on_CreateButtonText_pressed()
 {
     ui->CreateButton->setPixmap(QPixmap(":/images/GenericButtonClicked"));
@@ -353,6 +390,7 @@ void SplitIt::on_CreateButtonText_released()
 {
     ui->CreateButton->setPixmap(QPixmap(":/images/GenericButton"));
 
+    // Set draw priority of Creation UI elements
     ui->TintOverlay->raise();
     ui->CreateButton->raise();
     ui->CreateButtonText->raise();
@@ -406,6 +444,7 @@ void SplitIt::on_VolumeKnob_released()
     volumeButton = false;
     ui->VolumeKnob->setPixmap(QPixmap(":/images/VolumeKnob"));
 
+    // Convert UI element position into volume percentage
     if(ui->VolumeKnob->pos().y() <= 254 && ui->VolumeKnob->pos().y() >= 70)
     {
         volume = float(254 - ui->VolumeKnob->pos().y())/float(184);
@@ -432,7 +471,6 @@ void SplitIt::on_PlayPause_pressed()
 {
     ui->PlayPause->setPixmap(QPixmap(":/images/PlayPauseButtonPressed"));
     playPauseButton = true;
-
 }
 void SplitIt::on_PlayPause_released()
 {
@@ -455,7 +493,8 @@ void SplitIt::on_PlayPause_released()
         channel->setPaused(false);
 
         ui->PlayPause->setPixmap(QPixmap(":/images/PlayPauseButtonOn"));
-        // Update visualiser for each tick while music is played
+
+        // Update Visualiser and other UI elements for each tick while music is played
         while(playState == 2)
         {
             FMOD_DSP_METERING_INFO meter = {};
@@ -469,13 +508,25 @@ void SplitIt::on_PlayPause_released()
             {
                 getCurrentTrack();
                 ui->SongName->setText(nameArray.at(currentTrack));
+                for(int i = 0; i < ui->List->count(); i = i + 1)
+                {
+                    ui->List->item(i)->setTextColor(QColor(255, 255, 255, 255));
+                }
+                ui->List->item(currentTrack)->setTextColor(QColor(0, 191, 243, 255));
             }
             if(seekButton == false)
             {
                 channel->getPosition(&position, FMOD_TIMEUNIT_MS);
                 float knobPosition = float(position)/float(length);
                 ui->SeekKnob->move(knobPosition * 484 + 174, ui->SeekKnob->pos().y());
+                if(position >= length)
+                {
+                    playState = 0;
+                    channel->setPosition(0, FMOD_TIMEUNIT_MS);
+                    channel->setPaused(1);
+                }
             }
+            // Process pending events during loop to prevent infinite loop crashing
             QApplication::processEvents();
         }
     }
@@ -542,10 +593,19 @@ void SplitIt::on_Stop_released()
         ui->SongName->setText(nameArray.at(currentTrack));
     }
 
+    // Seek position update
     channel->getPosition(&position, FMOD_TIMEUNIT_MS);
     float knobPosition = float(position)/float(length);
     ui->SeekKnob->move(knobPosition * 484 + 174, ui->SeekKnob->pos().y());
-
+    // Track List selection update
+    if(trackArray.count() != 0)
+    {
+        for(int i = 0; i < ui->List->count(); i = i + 1)
+        {
+            ui->List->item(i)->setTextColor(QColor(255, 255, 255, 255));
+        }
+        ui->List->item(currentTrack)->setTextColor(QColor(0, 191, 243, 255));
+    }
 }
 void SplitIt::on_Stop_hovered()
 {
@@ -568,7 +628,8 @@ void SplitIt::on_Forward_pressed()
 void SplitIt::on_Forward_released()
 {
     forwardButton = false;
-    ui->Forward->setPixmap(QPixmap(":/images/TimeSkipFwdButton"));\
+    ui->Forward->setPixmap(QPixmap(":/images/TimeSkipFwdButton"));
+
     channel->getPosition(&position, FMOD_TIMEUNIT_MS);
     if(int(position) + 10000 < int(length))
     {
@@ -590,6 +651,15 @@ void SplitIt::on_Forward_released()
     channel->getPosition(&position, FMOD_TIMEUNIT_MS);
     float knobPosition = float(position)/float(length);
     ui->SeekKnob->move(knobPosition * 484 + 174, ui->SeekKnob->pos().y());
+
+    if(trackArray.count() != 0)
+    {
+        for(int i = 0; i < ui->List->count(); i = i + 1)
+        {
+            ui->List->item(i)->setTextColor(QColor(255, 255, 255, 255));
+        }
+        ui->List->item(currentTrack)->setTextColor(QColor(0, 191, 243, 255));
+    }
 }
 void SplitIt::on_Forward_hovered()
 {
@@ -635,6 +705,14 @@ void SplitIt::on_Back_released()
     channel->getPosition(&position, FMOD_TIMEUNIT_MS);
     float knobPosition = float(position)/float(length);
     ui->SeekKnob->move(knobPosition * 484 + 174, ui->SeekKnob->pos().y());
+    if(trackArray.count() != 0)
+    {
+        for(int i = 0; i < ui->List->count(); i = i + 1)
+        {
+            ui->List->item(i)->setTextColor(QColor(255, 255, 255, 255));
+        }
+        ui->List->item(currentTrack)->setTextColor(QColor(0, 191, 243, 255));
+    }
 }
 void SplitIt::on_Back_hovered()
 {
@@ -681,6 +759,15 @@ void SplitIt::on_Next_released()
     channel->getPosition(&position, FMOD_TIMEUNIT_MS);
     float knobPosition = float(position)/float(length);
     ui->SeekKnob->move(knobPosition * 484 + 174, ui->SeekKnob->pos().y());
+
+    if(trackArray.count() != 0)
+    {
+        for(int i = 0; i < ui->List->count(); i = i + 1)
+        {
+            ui->List->item(i)->setTextColor(QColor(255, 255, 255, 255));
+        }
+        ui->List->item(currentTrack)->setTextColor(QColor(0, 191, 243, 255));
+    }
 }
 void SplitIt::on_Next_hovered()
 {
@@ -708,7 +795,7 @@ void SplitIt::on_Prev_released()
     getCurrentTrack();
     if(currentTrack != 0)
     {
-        channel->setPosition((unsigned int)(trackArray.at(currentTrack) * 1000), FMOD_TIMEUNIT_MS);
+        channel->setPosition((unsigned int)(trackArray.at(currentTrack - 1) * 1000), FMOD_TIMEUNIT_MS);
     }
     else
     {
@@ -727,6 +814,15 @@ void SplitIt::on_Prev_released()
     channel->getPosition(&position, FMOD_TIMEUNIT_MS);
     float knobPosition = float(position)/float(length);
     ui->SeekKnob->move(knobPosition * 484 + 174, ui->SeekKnob->pos().y());
+
+    if(trackArray.count() != 0)
+    {
+        for(int i = 0; i < ui->List->count(); i = i + 1)
+        {
+            ui->List->item(i)->setTextColor(QColor(255, 255, 255, 255));
+        }
+        ui->List->item(currentTrack)->setTextColor(QColor(0, 191, 243, 255));
+    }
 }
 void SplitIt::on_Prev_hovered()
 {
@@ -740,36 +836,6 @@ void SplitIt::on_Prev_unhovered()
     ui->Prev->setPixmap(QPixmap(":/images/TrackBakButton"));
 }
 
-
-void SplitIt::enableCreationUI()
-{
-    ui->CreationBG->setVisible(1);
-    ui->CreationAdd->setVisible(1);
-    ui->CreationCurrentTime->setVisible(1);
-    ui->CreationLoad->setVisible(1);
-    ui->CreationNewTrack->setVisible(1);
-    ui->CreationRemove->setVisible(1);
-    ui->CreationSave->setVisible(1);
-    ui->CreationTrackList->setVisible(1);
-    ui->CreationTrackListTitle->setVisible(1);
-    ui->CreationTrackName->setVisible(1);
-    ui->CreationTrackTime->setVisible(1);
-}
-void SplitIt::disableCreationUI()
-{
-    ui->Background->setFocus();
-    ui->CreationBG->setVisible(0);
-    ui->CreationAdd->setVisible(0);
-    ui->CreationCurrentTime->setVisible(0);
-    ui->CreationLoad->setVisible(0);
-    ui->CreationNewTrack->setVisible(0);
-    ui->CreationRemove->setVisible(0);
-    ui->CreationSave->setVisible(0);
-    ui->CreationTrackList->setVisible(0);
-    ui->CreationTrackListTitle->setVisible(0);
-    ui->CreationTrackName->setVisible(0);
-    ui->CreationTrackTime->setVisible(0);
-}
 
 void SplitIt::on_CreationTrackName_enable()
 {
@@ -801,6 +867,7 @@ void SplitIt::on_CreationCurrentTime_released()
     ui->CreationCurrentTime->setPixmap(QPixmap(":/images/CreationUI/SetCurrentTime"));
     creationCurrentTimeButton = false;
 
+    // Convert current time to readable input value (HH:MM:SS)
     channel->getPosition(&position, FMOD_TIMEUNIT_MS);
     int currentTimeSeconds = (position/1000)%60;
     int currentTimeMinutes = ((position/1000 - currentTimeSeconds)%3600)/60;
@@ -850,9 +917,10 @@ void SplitIt::on_CreationLoad_released()
     ui->CreationLoad->setPixmap(QPixmap(":/images/CreationUI/Load"));
     creationLoadButton = false;
 
+    // Load config file
     QString qFilePath = NULL;
-    qFilePath = QFileDialog::getOpenFileName(this, tr("Select Audio File"),
-                                                     "C://",
+    qFilePath = QFileDialog::getOpenFileName(this, tr("Select Soundtrack Configuration File"),
+                                                     QCoreApplication::applicationDirPath() + QString("/soundtracks/"),
                                                      tr("SplitIt Config (*.txt)"));
     if(qFilePath != NULL)
     {
@@ -918,6 +986,7 @@ void SplitIt::on_CreationSave_released()
     saveFile.append(audioFilePath);
     saveFile.append(ui->STName->text());
     int line = 3;
+    // Convert track arrays to config file format
     while(line != (trackArray.count() * 2 + 3))
     {
         saveFile.append(QString("A ").append(QString::number(trackArray.at((line - 3)/2))));
@@ -967,10 +1036,12 @@ void SplitIt::on_CreationAdd_released()
     ui->CreationAdd->setPixmap(QPixmap(":/images/CreationUI/Add"));
     bool valid = true;
 
+    // Get input values
     QString newTrackName = ui->CreationTrackName->text();
     QString newTrackTime = ui->CreationTrackTime->text();
     int timeStringLength = newTrackTime.size();
 
+    // Convert input values to seconds
     newTrackTime.right(2).toInt(&valid, 10);
     if(valid == true)
     {
@@ -996,6 +1067,7 @@ void SplitIt::on_CreationAdd_released()
     }
     int secondsCheck = newTrackTime.right(2).left(1).toInt();
     int minutesCheck = newTrackTime.right(5).left(1).toInt();
+    // Support for MM:SS and HH:MM:SS formats
     if((secondsCheck >= 6) || (minutesCheck >= 6))
     {
         valid = false;
@@ -1022,13 +1094,22 @@ void SplitIt::on_CreationAdd_released()
         }
         else
         {
-            for(int i = 1; i != trackArray.count(); i = i + 1)
+            // Single pass insertion sort
+            if(trackArray.last() > newTrackTimeSeconds)
             {
-                if(trackArray.at(i - 1) < newTrackTimeSeconds)
+                for(int i = 0; i != trackArray.count(); i = i + 1)
                 {
-                    newTrackIndex = i;
+                    if(trackArray.at(i) <= newTrackTimeSeconds)
+                    {
+                        newTrackIndex = i;
+                    }
                 }
             }
+            else
+            {
+                newTrackIndex = trackArray.count();
+            }
+            qDebug() << newTrackIndex;
             trackArray.insert(newTrackIndex, newTrackTimeSeconds);
             nameArray.insert(newTrackIndex, newTrackName);
         }
@@ -1039,6 +1120,7 @@ void SplitIt::on_CreationAdd_released()
     }
     else
     {
+        // Invalid time input format message
         QMessageBox invalidTime;
         invalidTime.setText("Invalid Time");
         invalidTime.exec();
@@ -1132,13 +1214,21 @@ void SplitIt::on_SeekKnob_released()
     seekButton = false;
     ui->SeekKnob->setPixmap(QPixmap(":/images/VolumeKnob"));
 
+    // Convert UI object position to playback time position
     if(ui->SeekKnob->pos().x() <= 659 && ui->SeekKnob->pos().x() >= 173)
     {
         float timePortion = float(ui->SeekKnob->pos().x() - 173)/float(486);
         int newPosition = timePortion * length;
         channel->setPosition(newPosition, FMOD_TIMEUNIT_MS);
     }
-
+    if(trackArray.count() != 0)
+    {
+        for(int i = 0; i < ui->List->count(); i = i + 1)
+        {
+            ui->List->item(i)->setTextColor(QColor(255, 255, 255, 255));
+        }
+        ui->List->item(currentTrack)->setTextColor(QColor(0, 191, 243, 255));
+    }
 }
 void SplitIt::on_SeekKnob_hovered()
 {
